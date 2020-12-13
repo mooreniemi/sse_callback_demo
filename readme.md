@@ -7,12 +7,14 @@ receive `no_reply`.
 
 ### trying it
 
+After installing requirements, run `bin` scripts from root of project.
+
 ``` 
 # to launch the 4 servers on 3000,3001,4000,4001 
-./run.sh
+./bin/run.sh
 
 # to test that they're communicating properly
-./test.sh
+./bin/test.sh
 
 # to try arbitrary sends
 curl -s localhost:3000/ssec?m=howdy%20cowboy

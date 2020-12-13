@@ -16,7 +16,7 @@ def reverse():
     if request.args.get("m") and request.args.get("listener_id"):
         listener_id = request.args.get("listener_id")
         reply = process(request.args.get("m"))
-        args = request.args.copy()
+        args = {}
         args["m"] = reply
         # last processor in the chain, so reply to sink
         print("will pass reverse output " + reply + " to sink")

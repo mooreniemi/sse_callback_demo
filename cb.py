@@ -34,6 +34,7 @@ def echo(listen_to_addr, return_q):
     return_q.put(next(messages))
 
 
+# client just knows how to hit "top" of processing chain and listen
 @app.route("/ssec")
 def ssec():
     # pass over the args, get back listening address

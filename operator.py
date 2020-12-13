@@ -38,7 +38,7 @@ def echo(listen_to_addr, return_q):
 @app.route("/ssec")
 def ssec():
     # pass over the args, get back listening address
-    listen_to = requests.get("http://localhost:8080/q", params=request.args)
+    listen_to = requests.get("http://localhost:3001/q", params=request.args)
 
     response = "no_reply"
     if listen_to.status_code == 200:

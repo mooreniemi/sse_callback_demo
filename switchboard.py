@@ -26,8 +26,7 @@ listeners = defaultdict(Queue)
 def sink(listener_id):
     print("sinking data to " + listener_id)
     if request.args.get("m"):
-        # do whatever processing you'd do
-        data = process(request.args.get("m"))
+        data = request.args.get("m")
         # enque the processed data in this server's memory
         listeners[str(listener_id)].put(data)
     else:
@@ -40,36 +39,43 @@ def add_to_q():
     # create a unique address to listen to
     listener_id = uuid4()
 
-    # forward the m argument on to the sink
+    # forward the m argument on to the first processor
     if request.args.get("m"):
+        args = request.args.copy()
+        args['listener_id'] = str(listener_id)
         try:
-            listen_to = requests.get(
-                "http://localhost:8080/sink_to/" + str(listener_id),
-                params=request.args,
+            requests.get(
+                "http://localhost:4000/upper",
+                params=args,
                 timeout=0.0000000001,
             )
         except requests.exceptions.ReadTimeout:
             pass
 
     # inform the caller of where to listen to the response
-    reply = "http://localhost:8080/ssep/" + str(listener_id)
+    reply = "http://localhost:3001/ssep/" + str(listener_id)
     print("will call back " + reply)
     return reply
 
 
 @app.route("/ssep/<listener_id>")
 def ssep(listener_id):
-    print("(currently there are " + str(len(listeners.keys())) + " listeners)")
-    print("will read out the listeners for " + listener_id)
-    # at this point we stop storing for this listener
-    resp = listeners.pop(str(listener_id)).get()
+    t_end = time.time() + 0.049
+    resp = "timed_out"
+    while time.time() < t_end:
+        listeners_count = len(listeners.keys())
+
+        if listeners_count:
+            print("(currently there are " + str(listeners_count) + " listeners)")
+            print("will read out the listeners for " + listener_id)
+            try:
+                resp = listeners.pop(str(listener_id)).get()
+                break
+            except KeyError:
+                pass
     # format the sse specific stuff
     return Response(format_sse(resp), mimetype="text/event-stream")
 
-
-def process(data: str) -> str:
-    data = data + " " + data.upper()
-    return data
 
 
 def format_sse(data: str, event=None) -> str:
@@ -80,4 +86,4 @@ def format_sse(data: str, event=None) -> str:
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=8080)
+    app.run(debug=True, host="0.0.0.0", port=3001)

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-python3 respond.py &
-python3 cb.py &
+python3 switchboard.py &
+python3 operator.py &

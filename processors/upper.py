@@ -21,9 +21,7 @@ def upper():
         print("will pass upper output " + reply + " to reverse input")
         try:
             requests.get(
-                "http://localhost:4001/reverse",
-                params=args,
-                timeout=0.0000000001,
+                "http://localhost:4001/reverse", params=args, timeout=0.0000000001,
             )
         except requests.exceptions.ReadTimeout:
             pass

@@ -22,6 +22,12 @@ from uuid import uuid4
 listeners = defaultdict(Queue)
 
 
+@app.route("/flush")
+def flush():
+    # just in case you want to clear the listeners manually
+    listeners = defaultdict(Queue)
+
+
 @app.route("/sink_to/<listener_id>")
 def sink(listener_id):
     print("sinking data to " + listener_id)
@@ -37,23 +43,21 @@ def sink(listener_id):
 @app.route("/q")
 def add_to_q():
     # create a unique address to listen to
-    listener_id = uuid4()
+    listener_id = str(uuid4())
 
     # forward the m argument on to the first processor
     if request.args.get("m"):
         args = request.args.copy()
-        args['listener_id'] = str(listener_id)
+        args["listener_id"] = listener_id
         try:
             requests.get(
-                "http://localhost:4000/upper",
-                params=args,
-                timeout=0.0000000001,
+                "http://localhost:4000/upper", params=args, timeout=0.0000000001,
             )
         except requests.exceptions.ReadTimeout:
             pass
 
     # inform the caller of where to listen to the response
-    reply = "http://localhost:3001/ssep/" + str(listener_id)
+    reply = "http://localhost:3001/ssep/" + listener_id
     print("will call back " + reply)
     return reply
 
@@ -69,13 +73,13 @@ def ssep(listener_id):
             print("(currently there are " + str(listeners_count) + " listeners)")
             print("will read out the listeners for " + listener_id)
             try:
-                resp = listeners.pop(str(listener_id)).get()
+                resp = listeners.pop(listener_id).get()
                 break
             except KeyError:
                 pass
+
     # format the sse specific stuff
     return Response(format_sse(resp), mimetype="text/event-stream")
-
 
 
 def format_sse(data: str, event=None) -> str:

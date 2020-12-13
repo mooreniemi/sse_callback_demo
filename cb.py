@@ -1,6 +1,5 @@
 # https://flask.palletsprojects.com/en/1.1.x/quickstart/
 # pip3 install flask
-# export FLASK_APP=respond.py && flask run
 
 import os
 import socket

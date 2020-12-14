@@ -26,6 +26,7 @@ listeners = defaultdict(Queue)
 def flush():
     # just in case you want to clear the listeners manually
     listeners = defaultdict(Queue)
+    return 'ok'
 
 
 @app.route("/sink_to/<listener_id>")

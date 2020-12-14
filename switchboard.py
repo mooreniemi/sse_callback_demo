@@ -31,13 +31,13 @@ def flush():
 
 @app.route("/sink_to/<listener_id>")
 def sink(listener_id):
-    print("sinking data to " + listener_id)
+    app.logger.debug("sinking data to " + listener_id)
     if request.args.get("m"):
         data = request.args.get("m")
         # enque the processed data in this server's memory
         listeners[str(listener_id)].put(data)
     else:
-        print("did you mean to do an empty sink?")
+        app.logger.error("did you mean to do an empty sink?")
     return listener_id
 
 
@@ -59,7 +59,7 @@ def add_to_q():
 
     # inform the caller of where to listen to the response
     reply = "http://localhost:3001/ssep/" + listener_id
-    print("will call back " + reply)
+    app.logger.debug("will call back " + reply)
     return reply
 
 
@@ -71,8 +71,8 @@ def ssep(listener_id):
         listeners_count = len(listeners.keys())
 
         if listeners_count:
-            print("(currently there are " + str(listeners_count) + " listeners)")
-            print("will read out the listeners for " + listener_id)
+            app.logger.debug("(currently there are " + str(listeners_count) + " listeners)")
+            app.logger.debug("will read out the listeners for " + listener_id)
             try:
                 resp = listeners.pop(listener_id).get()
                 break

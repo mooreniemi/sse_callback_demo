@@ -21,7 +21,6 @@ app = Flask(__name__)
 
 
 def echo(listen_to_addr, return_q):
-    print("will listen to " + listen_to_addr)
     # listen for the emitted event
     # https://github.com/btubbs/sseclient/blob/master/sseclient.py
     messages = SSEClient(listen_to_addr)
@@ -42,6 +41,7 @@ def ssec():
 
     response = "no_reply"
     if listen_to.status_code == 200:
+        app.logger.debug("will listen to " + listen_to.text)
         r_queue = Queue()
         p = Process(target=echo, args=(listen_to.text, r_queue,))
         p.start()

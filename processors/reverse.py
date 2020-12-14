@@ -19,7 +19,7 @@ def reverse():
         args = {}
         args["m"] = reply
         # last processor in the chain, so reply to sink
-        print("will pass reverse output " + reply + " to sink")
+        app.logger.debug("will pass reverse output " + reply + " to sink")
         try:
             requests.get(
                 "http://localhost:3001/sink_to/" + listener_id,

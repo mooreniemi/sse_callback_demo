@@ -57,13 +57,13 @@ def add_to_q():
         args["listener_id"] = listener_id
         try:
             requests.get(
-                "http://localhost:4000/upper", params=args, timeout=0.0000000001,
+                "http://localhost:" + str(os.getenv("UPPER_PORT")) + "/upper", params=args, timeout=0.0000000001,
             )
         except requests.exceptions.ReadTimeout:
             pass
 
     # inform the caller of where to listen to the response
-    reply = "http://localhost:3001/ssep/" + listener_id
+    reply = "http://localhost:" + str(os.getenv("SWITCHBOARD_PORT")) + "/ssep/" + listener_id
     app.logger.debug("will call back " + reply)
     return reply
 
@@ -96,4 +96,4 @@ def format_sse(data: str, event=None) -> str:
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=3001)
+    app.run(debug=True, host="0.0.0.0", port=os.getenv("SWITCHBOARD_PORT"))

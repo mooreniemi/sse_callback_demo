@@ -1,7 +1,7 @@
+import os
 import requests
 
-
-def process(app, request, func, next_url="http://localhost:3001/sink_to"):
+def process(app, request, func, next_url="http://localhost:" + str(os.getenv("SWITCHBOARD_PORT")) + "/sink_to"):
     reply = "no_reply"
 
     if request.args.get("m") and request.args.get("listener_id"):
@@ -11,8 +11,7 @@ def process(app, request, func, next_url="http://localhost:3001/sink_to"):
         args = request.args.copy()
         args["m"] = reply
 
-        if "sink_to" in next_url:
-            app.logger.debug("will pass output " + reply + " to sink")
+        app.logger.debug("will pass output " + reply + " to " + next_url)
 
         # FIXME: hacky way to not wait on reply
         try:

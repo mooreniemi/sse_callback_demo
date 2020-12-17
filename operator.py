@@ -37,7 +37,7 @@ def echo(listen_to_addr, return_q):
 @app.route("/ssec")
 def ssec():
     # pass over the args, get back listening address
-    listen_to = requests.get("http://localhost:3001/q", params=request.args)
+    listen_to = requests.get("http://localhost:" + str(os.getenv("SWITCHBOARD_PORT")) + "/q", params=request.args)
 
     response = "no_reply"
     if listen_to.status_code == 200:
@@ -63,4 +63,4 @@ def ssec():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=3000)
+    app.run(debug=True, host="0.0.0.0", port=os.getenv("OPERATOR_PORT"))

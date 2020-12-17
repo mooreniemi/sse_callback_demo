@@ -1,10 +1,9 @@
 # https://flask.palletsprojects.com/en/1.1.x/quickstart/
 # pip3 install flask
-
-import json
+import os
 
 from flask import Flask
-from flask import request, Response
+from flask import request
 from processor import process
 
 app = Flask(__name__)
@@ -12,7 +11,7 @@ app = Flask(__name__)
 
 @app.route("/upper")
 def upper():
-    reply = process(app, request, upper_data, "http://localhost:4001/reverse")
+    reply = process(app, request, upper_data, "http://localhost:" + str(os.getenv('REVERSE_PORT')) + "/reverse")
     return reply
 
 
@@ -22,4 +21,4 @@ def upper_data(data: str) -> str:
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=4000)
+    app.run(debug=True, host="0.0.0.0", port=os.getenv('UPPER_PORT'))

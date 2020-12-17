@@ -5,30 +5,18 @@ import json
 
 from flask import Flask
 from flask import request, Response
-import requests
+from processor import process
 
 app = Flask(__name__)
 
 
 @app.route("/upper")
 def upper():
-    reply = "no_reply"
-    if request.args.get("m") and request.args.get("listener_id"):
-        # modify the m for the next processor
-        reply = process(request.args.get("m"))
-        args = request.args.copy()
-        args["m"] = reply
-        app.logger.debug("will pass upper output " + reply + " to reverse input")
-        try:
-            requests.get(
-                "http://localhost:4001/reverse", params=args, timeout=0.0000000001,
-            )
-        except requests.exceptions.ReadTimeout:
-            pass
+    reply = process(app, request, upper_data, "http://localhost:4001/reverse")
     return reply
 
 
-def process(data: str) -> str:
+def upper_data(data: str) -> str:
     data = data + " " + data.upper()
     return data
 

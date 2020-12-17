@@ -29,13 +29,18 @@ def flush():
     return 'ok'
 
 
-@app.route("/sink_to/<listener_id>")
-def sink(listener_id):
+@app.route("/sink_to")
+def sink():
+    listener_id = request.args.get("listener_id")
+    if not listener_id:
+        app.logger.error("listener_id required")
+        return 'no_reply', 400
+
     app.logger.debug("sinking data to " + listener_id)
     if request.args.get("m"):
         data = request.args.get("m")
         # enque the processed data in this server's memory
-        listeners[str(listener_id)].put(data)
+        listeners[listener_id].put(data)
     else:
         app.logger.error("did you mean to do an empty sink?")
     return listener_id

@@ -5,33 +5,18 @@ import json
 
 from flask import Flask
 from flask import request, Response
-import requests
+from processor import process
 
 app = Flask(__name__)
 
 
 @app.route("/reverse")
 def reverse():
-    reply = "no_reply"
-    if request.args.get("m") and request.args.get("listener_id"):
-        listener_id = request.args.get("listener_id")
-        reply = process(request.args.get("m"))
-        args = {}
-        args["m"] = reply
-        # last processor in the chain, so reply to sink
-        app.logger.debug("will pass reverse output " + reply + " to sink")
-        try:
-            requests.get(
-                "http://localhost:3001/sink_to/" + listener_id,
-                params=args,
-                timeout=0.0000000001,
-            )
-        except requests.exceptions.ReadTimeout:
-            pass
+    reply = process(app, request, reverse_data)
     return reply
 
 
-def process(data: str) -> str:
+def reverse_data(data: str) -> str:
     data = data + " " + data[::-1]
     return data
 
